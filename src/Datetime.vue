@@ -24,6 +24,7 @@
           :use12-hour="use12Hour"
           :hour-step="hourStep"
           :minute-step="minuteStep"
+          :second-step="secondStep"
           :min-datetime="popupMinDatetime"
           :max-datetime="popupMaxDatetime"
           @confirm="confirm"
@@ -108,6 +109,10 @@ export default {
       default: 1
     },
     minuteStep: {
+      type: Number,
+      default: 1
+    },
+    secondStep: {
       type: Number,
       default: 1
     },

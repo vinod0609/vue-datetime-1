@@ -82,6 +82,10 @@ export function minutes (step) {
   return new Array(Math.ceil(60 / step)).fill(null).map((item, index) => index * step)
 }
 
+export function seconds (step) {
+  return new Array(Math.ceil(60 / step)).fill(null).map((item, index) => index * step)
+}
+
 export function years (current) {
   return new Array(201).fill(null).map((item, index) => current - 100 + index)
 }

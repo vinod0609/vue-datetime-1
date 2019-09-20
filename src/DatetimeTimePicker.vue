@@ -6,7 +6,10 @@
     <div class="vdatetime-time-picker__list vdatetime-time-picker__list--minutes" ref="minuteList">
       <div class="vdatetime-time-picker__item" v-for="minute in minutes" @click="selectMinute(minute)" :class="{'vdatetime-time-picker__item--selected': minute.selected, 'vdatetime-time-picker__item--disabled': minute.disabled}">{{ minute.number }}</div>
     </div>
-    <div class="vdatetime-time-picker__list vdatetime-time-picker__list--suffix" ref="suffixList" v-if="use12Hour">
+    <div class="vdatetime-time-picker__list vdatetime-time-picker__list--seconds" ref="secondList">
+      <div v-if="second!==undefined" class="vdatetime-time-picker__item" v-for="second in seconds" @click="selectSecond(second)" :class="{'vdatetime-time-picker__item--selected': second.selected, 'vdatetime-time-picker__item--disabled': second.disabled}">{{ second.number }}</div>
+    </div>
+    <div class="vdatetime-time-picker__list--suffix" ref="suffixList" v-if="use12Hour">
       <div class="vdatetime-time-picker__item" @click="selectSuffix('am')" :class="{'vdatetime-time-picker__item--selected': hour < 12}">am</div>
       <div class="vdatetime-time-picker__item" @click="selectSuffix('pm')" :class="{'vdatetime-time-picker__item--selected': hour >= 12}">pm</div>
     </div>
@@ -14,7 +17,7 @@
 </template>
 
 <script>
-import { hours, minutes, pad, timeComponentIsDisabled } from './util'
+import { hours, minutes, seconds, pad, timeComponentIsDisabled } from './util'
 
 export default {
   props: {
@@ -23,6 +26,10 @@ export default {
       required: true
     },
     minute: {
+      type: Number,
+      required: true
+    },
+    second: {
       type: Number,
       required: true
     },
@@ -35,6 +42,10 @@ export default {
       default: 1
     },
     minuteStep: {
+      type: Number,
+      default: 1
+    },
+    secondStep: {
       type: Number,
       default: 1
     },
@@ -73,17 +84,33 @@ export default {
         disabled: timeComponentIsDisabled(this.minMinute, this.maxMinute, minute)
       }))
     },
+    seconds () {
+      console.log(this.second)
+      let secondsc= seconds(this.secondStep).map(second => ({
+        number: pad(second),
+        selected: second === this.second,
+        disabled: timeComponentIsDisabled(this.minSecond, this.maxSecond, second)
+      }))
+      console.log(secondsc)
+      return secondsc
+    },
     minHour () {
       return this.minTime ? parseInt(this.minTime.split(':')[0]) : null
     },
     minMinute () {
       return this.minTime && this.minHour === this.hour ? parseInt(this.minTime.split(':')[1]) : null
     },
+    minSecond () {
+      return this.minTime && this.minMinute === this.minute ? parseInt(this.minTime.split(':')[1]) : null
+    },
     maxHour () {
       return this.maxTime ? parseInt(this.maxTime.split(':')[0]) : null
     },
     maxMinute () {
       return this.maxTime && this.maxHour === this.hour ? parseInt(this.maxTime.split(':')[1]) : null
+    },
+    maxSecond () {
+      return this.maxTime && this.maxMinute === this.minute ? parseInt(this.maxTime.split(':')[1]) : null
     }
   },
 
@@ -101,6 +128,14 @@ export default {
       }
 
       this.$emit('change', { minute: parseInt(minute.number) })
+    },
+    selectSecond (second){
+      console.log(second)
+      if (second.disabled) {
+        return
+      }
+
+      this.$emit('change', { second: parseInt(second.number) })
     },
     selectSuffix (suffix) {
       if (suffix === 'am') {
@@ -155,7 +190,7 @@ export default {
 
 .vdatetime-time-picker__list {
   float: left;
-  width: 50%;
+  width: 33.3%;
   height: 305px;
   overflow-y: scroll;
 

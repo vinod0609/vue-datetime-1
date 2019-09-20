@@ -34,11 +34,14 @@
           @change="onChangeTime"
           :hour="hour"
           :minute="minute"
+          :second="second"
           :use12-hour="use12Hour"
           :hour-step="hourStep"
           :minute-step="minuteStep"
+          :second-step="secondStep"
           :min-time="minTime"
-          :max-time="maxTime"></datetime-time-picker>
+          :max-time="maxTime"
+          ></datetime-time-picker>
     </div>
     <div class="vdatetime-popup__actions">
       <div class="vdatetime-popup__actions__button vdatetime-popup__actions__button--cancel" @click="cancel">
@@ -98,6 +101,10 @@ export default {
       default: 1
     },
     minuteStep: {
+      type: Number,
+      default: 1
+    },
+    secondStep:{
       type: Number,
       default: 1
     },
@@ -161,6 +168,9 @@ export default {
     },
     minute () {
       return this.newDatetime.minute
+    },
+    second () {
+      return this.newDatetime.second
     },
     dateFormatted () {
       return this.newDatetime.toLocaleString({
@@ -236,7 +246,7 @@ export default {
         this.nextStep()
       }
     },
-    onChangeTime ({ hour, minute, suffixTouched }) {
+    onChangeTime ({ hour, minute,second, suffixTouched }) {
       if (suffixTouched) {
         this.timePartsTouched['suffix'] = true
       }
@@ -250,12 +260,15 @@ export default {
         this.newDatetime = this.newDatetime.set({ minute })
         this.timePartsTouched['minute'] = true
       }
+      if (Number.isInteger(second)) {
+        this.newDatetime = this.newDatetime.set({ second })
+        this.timePartsTouched['second'] = true
+      }
 
-      const goNext = this.auto && this.timePartsTouched['hour'] && this.timePartsTouched['minute'] && (
+      const goNext = this.auto && this.timePartsTouched['hour'] && this.timePartsTouched['minute'] && this.timePartsTouched['second'] && (
         this.timePartsTouched['suffix'] ||
         !this.use12Hour
       )
-
       if (goNext) {
         this.nextStep()
       }
